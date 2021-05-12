@@ -61,46 +61,40 @@ with skt.socket(skt.AF_INET, skt.SOCK_STREAM) as stcp:
                 puerto_random_udp = sudp.recv(BUFFER)            # Recibir solicitud del UDP, si la solicitud esta correcta, Hacer puerto random
 
             # Establecer nueva conexion UDP para jugar:
-            with skt.socket(skt.AF_INET, skt.SOCK_DGRAM) as sudp_juego:
-                sudp_juego.bind((HOST, puerto_random_udp))
-                print('La partida transcurre en el puerto,', puerto_random_udp,'de SC')
-                
-
-            
-            
-
-            
-
             if int(puerto_random_udp) > 49152 and int(puerto_random_udp) < 65535:
-                conn_cli.send("1".encode())     # Enviar resultado solicitud a TCP
+                with skt.socket(skt.AF_INET, skt.SOCK_DGRAM) as sudp_juego:             # El resto del juego deberia transcurrir aqui...
+                    sudp_juego.bind((HOST, puerto_random_udp))
+                    print('La partida transcurre en el puerto,', puerto_random_udp,'de SC')
 
-                # Jugadas de cliente y servidor:
-                resultado = ['0','0','0']          # 3-lista de resultados, [puntaje_cliente, puntaje_servidor, ganador_ronda]
-                while int(resultado[0]) < 3 and int(resultado[1]) < 3:     # while de las jugadas
+                    conn_cli.send("1".encode())     # Enviar resultado solicitud a TCP
 
-                    # Espero jugada cliente 
-                    jugada_cliente = conn_cli.recv(BUFFER).decode()
+                    # Jugadas de cliente y servidor:
+                    resultado = ['0','0','0']          # 3-lista de resultados, [puntaje_cliente, puntaje_servidor, ganador_ronda]
+                    while int(resultado[0]) < 3 and int(resultado[1]) < 3:     # while de las jugadas
 
-                    # Pedir jugada a UDP
+                        # Espero jugada cliente 
+                        jugada_cliente = conn_cli.recv(BUFFER).decode()
 
-                    # Recibir jugada UDP
-                    jugada_servidor = "pa"
+                        # Pedir jugada a UDP
 
-                    # Enviar jugada de servidor a cliente
-                    conn_cli.sendall(jugada_servidor.encode())
-                    _ = conn_cli.recv(BUFFER)
+                        # Recibir jugada UDP
+                        jugada_servidor = "pa"
 
-                    # Enviar resultados de jugadas
-                    resultado[2] = str(cachipun(jugada_cliente, jugada_servidor))
+                        # Enviar jugada de servidor a cliente
+                        conn_cli.sendall(jugada_servidor.encode())
+                        _ = conn_cli.recv(BUFFER)
 
-                    if resultado[2] == '1':   # Si cliente gana
-                        resultado[0] = str(int(resultado[0]) + 1)
-                    elif resultado[2] == '-1':   # Si servidor gana
-                        resultado[1] = str(int(resultado[1]) + 1)
+                        # Enviar resultados de jugadas
+                        resultado[2] = str(cachipun(jugada_cliente, jugada_servidor))
 
-                    
-                    mensaje = ','.join(resultado)
-                    conn_cli.send(mensaje.encode())
+                        if resultado[2] == '1':   # Si cliente gana
+                            resultado[0] = str(int(resultado[0]) + 1)
+                        elif resultado[2] == '-1':   # Si servidor gana
+                            resultado[1] = str(int(resultado[1]) + 1)
+
+                        
+                        mensaje = ','.join(resultado)
+                        conn_cli.send(mensaje.encode())
                 
 
                     
