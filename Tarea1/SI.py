@@ -125,6 +125,7 @@ with skt.socket(skt.AF_INET, skt.SOCK_STREAM) as stcp:
                             mensaje = ','.join(resultado)
                             conn_cli.send(mensaje.encode())
                         sudp_send.sendto("fin".encode(), (HOST, UPORT_SEND))
+                        sudp_send.close()
             
             else:
                 conn_cli.send("No".encode())     # Enviar resultado solicitud a TCP
