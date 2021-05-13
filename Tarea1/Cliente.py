@@ -18,6 +18,10 @@ BUFFER = 1024
 jugadas = {1: "pi", 2: "pa", 3: "ti"}
 
 
+def simbolo_a_nombre (simbolo):
+    dicc = {"ti":"Tijera", "pa": "Papel", "pi": "Piedra"}
+    return dicc[simbolo]
+
 print("==============\t BIENVENIDO \t==============")
 print("--------------\t     A \t\t--------------")
 print("==============\t PI PA TI \t==============\n")
@@ -46,7 +50,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 while True:
                     print()
                     print("\n==============\t INICIO TURNO \t==============")
-                    print("Selecciona una de las siguientes opciones: \n 1: piedra \t 2: papel \t 3: tijera ")
+                    print("Selecciona una de las siguientes opciones: \n 1: Piedra \t 2: Papel \t 3: Tijera ")
                     opcion = int(input(">> ")) 
                     try:
                         opcion = jugadas[opcion]
@@ -54,13 +58,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     except:
                         print("Seleccione una opcion valida!")
 
-                print("\n[*] Usted jugo ", opcion)
+                print("\n[*] Usted jugo", simbolo_a_nombre(opcion))
                 s.send(opcion.encode())
 
                 #       Recibe Resultado jugada
 
                 recibe_jugada = s.recv(BUFFER)
-                print("[*] El Bot jugo ",  recibe_jugada.decode())
+                print("[*] El Bot jugo", simbolo_a_nombre(recibe_jugada.decode()))
                 print("---")
 
                 s.send("OK".encode())
@@ -75,7 +79,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     resultado[1] += 1
 
                 dicc_resultados = {-1: "servidor", 0:"nadie", 1:"usted"}
-                print("[*] El ganador de esta ronda fue \t", dicc_resultados[int(recibe_resultado[2])])
+                print("[*] El ganador de esta ronda fue", dicc_resultados[int(recibe_resultado[2])])
                 print("[*] El marcador actual es Jugador: "+ recibe_resultado[0]+", Bot: "+ recibe_resultado[1])
 
 

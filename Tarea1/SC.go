@@ -1,8 +1,6 @@
 // Bot o contrincante
-// Generara jugadas aleatorias hasta que se le indique el final del juego
+// Generar jugadas aleatorias hasta que se le indique el final del juego
 // Se conecta via UDP a el SI en el comienzo del juego, y tambien mediante UDP en cada partida pero en otro puerto (aleatorio)
-
-// Averiguar disponibilidad del servidor cachipun: puedo jugar? (Esta respuesta debe ser si o no, los ayudantes sugieren un 90% exito.)
 
 package main
 
@@ -14,9 +12,8 @@ import (
 	"time"
 )
 
-
-func jugada_cachi() string { // Retorna un numero valido como puerto, o 0
-	//rand.Seed(time.Now().UnixNano())
+// Retorna una jugada aleatoria
+func jugada_cachi() string { 
 	num_jugada := strconv.FormatInt(int64(rand.Intn(3)), 10)
 	if num_jugada == "0"{
 		return "pa"
@@ -29,8 +26,8 @@ func jugada_cachi() string { // Retorna un numero valido como puerto, o 0
 	}
 }
 
-
-func rand_disp() string { // Retorna un numero valido como puerto, o 0
+// Retorna un numero entre 1-10 para medir su disponibilidad, y un puerto aleatorio dentro de los recomendados
+func rand_disp() string { 
 
 	rand.Seed(time.Now().UnixNano())
 	disponibilidad := strconv.FormatInt(int64(rand.Intn(10)), 10)
@@ -42,7 +39,6 @@ func rand_disp() string { // Retorna un numero valido como puerto, o 0
 }
 
 func main() {
-
 
 	IP := "localhost"
 	PUERTO_REC := ":50000"
@@ -60,7 +56,7 @@ func main() {
 		return
 	}
 
-	fmt.Println(" Escuchando en" , s_rec)
+	fmt.Println("Escuchando en" , s_rec)
 	fmt.Println()
 	
 	for{
@@ -86,21 +82,24 @@ func main() {
 			}
 			fmt.Println("Enviando respuesta a ", s_send)
 			fmt.Println()
-			
+
+			// Preguntar x disponibilidad
 			resultado_disponibilidad := rand_disp()
 			data := []byte(resultado_disponibilidad)
-			// Preguntar x disponibilidad
+			
 
 			// Enviar puerto
 			_, err2 := conn_send.Write(data)
-
 			if err2 != nil{
 				// handle error
 				fmt.Println(err2)
 				return
 			}
+
+			// Si la funcion rand_disp() entrega un valor admisible
 			if resultado_disponibilidad[:1] > "2"{
-				defer conn_send.Close()
+				defer conn_send.Close()				// Se cierra la conexion con puerto :50001
+				
 				// Iniciar conexion UDP con el nuevo puerto random
 				puerto_random := resultado_disponibilidad[2:]
 				
@@ -112,7 +111,8 @@ func main() {
 				}
 
 				fmt.Println("Enviando jugada a ", s_random)
-				// While de resultados, SI envia "inicio" cuando comienza y "fin" cuando termina
+
+				// Sincronizar con el "While de juego", donde transcurren los turnos
 				buffer2 := make([]byte, BUFFER)
 				n, _, err := conn_rec.ReadFromUDP(buffer2)
 				if err != nil {
@@ -120,75 +120,36 @@ func main() {
 					return
 				}
 				
+				// Cada vez que se inicie una nueva iteracion, se espera que llegue "inicio"
 				for string(buffer2[0:n]) == "inicio"{
-					//fmt.Println("Recibi inicio")
-					jugada := []byte(jugada_cachi())
-					_, err := conn_rand.Write(jugada)
+					jugada := []byte(jugada_cachi())		// Se genera jugada aleatoria
+					_, err := conn_rand.Write(jugada)		// Se envia jugada aleatoria a puerto random
 					if err != nil{
 						fmt.Println(err)
 						return
 					}
-					buffer := make([]byte, BUFFER)
-					n, _, err := conn_rec.ReadFromUDP(buffer)
+					buffer2 := make([]byte, BUFFER)			// Se vuelve a preguntar por la condicion del for.
+					n, _, err := conn_rec.ReadFromUDP(buffer2)
 					if err != nil {
 						fmt.Println(err)
 						return
 					}
-
-					if string(buffer[0:n]) == "STOP"{
+					
+					if string(buffer2[0:n]) == "fin"{		// En caso de terminar juego, salir de este for para 
+						defer conn_rand.Close()				// cerrar socket random
+						break								// volver a pedir disponibilidad
+					}
+					
+					if string(buffer2[0:n]) == "STOP"{		// Si se envia mensaje de cierre, 
+						defer conn_rec.Close()				// cerrar socket :50000
 						return
 					}
 				}
-			}
-			
-			
-			
-			
-
-			
-
-
-
-
+			}	
 		} else if string(buffer[0:n]) == "STOP" {
 			fmt.Println()
 			fmt.Println("Tenemos que cerrar!!!")
 			return
-		}
-
-	
-
-		//_, err := conn_send.WriteToUDP([])
-
-		
+		}	
 	}
-	
-
-	
-	
-		//cerrar conexion si no hay uwu
-	
-
-	
-
-
-	// Cerrar conexion UDP puerto fijo
-
-	// Establecer conexion con SI en nuevo puerto
-
-
-	
-	// For
-		// Recibir peticion jugada
-
-
-		// Hacer una jugada random
-
-
-
-		// enviar jugada random
-
-
-	// Cerrar conexion cuando indique SI
-
 }
