@@ -1,4 +1,4 @@
-# Copyright 2011-2012 James McCauley
+	# Copyright 2011-2012 James McCauley
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -142,14 +142,29 @@ class LearningSwitch (object):
         msg.in_port = event.port
         self.connection.send(msg)
 
-    self.macToPort[packet.src] = event.port # 1
+
+    hosts = [1, 2, 5, 6, 9, 10, 13, 14]
+    
+    if event.port in hosts:
+        self.macToPort[packet.src] = event.port  # 1
+    else:
+        if event.port == 3 or event.port == 15:
+            self.macToPort[packet.src] = event.port + 1
+        elif event.port == 12 or event.port == 8:
+            self.macToPort[packet.src] = event.port - 1
+        else:
+            drop(1)
+            return
 
     '''Deberiamos comentar el #2 ?'''
 
+
+    '''
     if not self.transparent: # 2
       if packet.type == packet.LLDP_TYPE or packet.dst.isBridgeFiltered():
         drop() # 2a
         return
+    '''
 
     if packet.dst.is_multicast:
       flood() # 3a
@@ -188,6 +203,8 @@ class LearningSwitch (object):
 
         ### Host 1
         if puerto == 1:
+          print("Estoy en Switch 1, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:02":
             port = 2
           else:
@@ -195,6 +212,8 @@ class LearningSwitch (object):
 
         ### Host 2
         elif puerto == 2:
+          print("Estoy en Switch 1, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:01":
             port = 1
           else:
@@ -202,6 +221,8 @@ class LearningSwitch (object):
 
         ### Otros Hosts
         elif puerto == 3:
+          print("Estoy en Switch 1, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:01":
             port = 1
           elif destino == "00:00:00:00:00:02":
@@ -214,6 +235,8 @@ class LearningSwitch (object):
         
         ### Host 3
         if puerto == 5:
+          print("Estoy en Switch 2, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:04":
             port = 6
           else:
@@ -221,6 +244,8 @@ class LearningSwitch (object):
 
         ### Host 4
         elif puerto == 6:
+          print("Estoy en Switch 2, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:03":
             port = 5
           else:
@@ -228,6 +253,8 @@ class LearningSwitch (object):
 
         ### Otros Hosts
         elif puerto == 8:
+          print("Estoy en Switch 2, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:03":
             port = 5
           elif destino == "00:00:00:00:00:04":
@@ -239,6 +266,8 @@ class LearningSwitch (object):
         ####### Switch 3 ####### 
         ### Host 5
         if puerto == 9:
+          print("Estoy en Switch 3, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:06":
             port = 10
           else:
@@ -246,6 +275,8 @@ class LearningSwitch (object):
 
         ### Host 6
         elif puerto == 10:
+          print("Estoy en Switch 3, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:05":
             port = 9
           else:
@@ -253,6 +284,8 @@ class LearningSwitch (object):
 
         ### Otros Hosts
         elif puerto == 12:
+          print("Estoy en Switch 3, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:05":
             port = 9
           elif destino == "00:00:00:00:00:06":
@@ -264,6 +297,8 @@ class LearningSwitch (object):
         ####### Switch 4 ####### 
         ### Host 7
         if puerto == 13:
+          print("Estoy en Switch 4, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:08":
             port = 14
           else:
@@ -271,6 +306,8 @@ class LearningSwitch (object):
 
         ### Host 8
         elif puerto == 14:
+          print("Estoy en Switch 4, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:07":
             port = 13
           else:
@@ -278,14 +315,14 @@ class LearningSwitch (object):
 
         ### Otros Hosts
         elif puerto == 15:
+          print("Estoy en Switch 4, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:07":
             port = 13
           elif destino == "00:00:00:00:00:08":
             port = 14
           else:
             port = 16
-
-
 
 
         msg = of.ofp_flow_mod()
