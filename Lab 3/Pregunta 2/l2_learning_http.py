@@ -368,7 +368,9 @@ class LearningSwitch (object):
                 print("Nope! tenemos que botar el paquete...")
                 drop(1)
                 return
-        
+        else:
+          drop(1)
+          return
 
 
 
