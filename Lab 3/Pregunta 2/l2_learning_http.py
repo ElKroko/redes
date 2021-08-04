@@ -144,18 +144,6 @@ class LearningSwitch (object):
 
     ####### 
 
-    hosts = [1, 2, 6, 7, 15, 16]
-    
-    if event.port in hosts:
-        self.macToPort[packet.src] = event.port  # 1
-    else:
-        if event.port == 3 or event.port == 15:
-            self.macToPort[packet.src] = event.port + 1
-        elif event.port == 12 or event.port == 8:
-            self.macToPort[packet.src] = event.port - 1
-        else:
-            drop(1)
-            return
 
     '''Deberiamos comentar el #2 ?'''
 
