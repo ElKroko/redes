@@ -144,7 +144,7 @@ class LearningSwitch (object):
 
     ####### 
 
-
+    self.macToPort[packet.src] = event.port  # 1
     '''Deberiamos comentar el #2 ?'''
 
 
