@@ -60,7 +60,7 @@ class TopoAnillo( Topo ):
 
 def runTopo():
 
-    topo = topoAnillo()
+    topo = TopoAnillo()
 
     # crear una red basada en la topologia, usando OVS y controlado remotamente.
 
