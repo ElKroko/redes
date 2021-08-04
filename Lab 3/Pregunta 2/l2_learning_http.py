@@ -228,7 +228,7 @@ class LearningSwitch (object):
             drop(1)
             return
           else:
-            port = 4
+            port = 5
         
         elif puerto_entrada == 4:
           print("Estoy en Switch 1, y vengo de ", origen)
@@ -251,7 +251,8 @@ class LearningSwitch (object):
           print("Estoy en Switch 2, y vengo de ", origen)
           print("Voy a ", destino)
           if destino == "00:00:00:00:00:04":
-            port = 7
+            drop(1)
+            return
           else:
             port = 9
         
@@ -260,7 +261,8 @@ class LearningSwitch (object):
           print("Estoy en Switch 2, y vengo de ", origen)
           print("Voy a ", destino)
           if destino == "00:00:00:00:00:03":
-            port = 6
+            drop(1)
+            return
           else:
             port = 9
 
