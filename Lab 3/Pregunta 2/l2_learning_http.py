@@ -142,7 +142,7 @@ class LearningSwitch (object):
         msg.in_port = event.port
         self.connection.send(msg)
 
-    ####### 
+    #######
 
     self.macToPort[packet.src] = event.port  # 1
     '''Deberiamos comentar el #2 ?'''
@@ -188,182 +188,189 @@ class LearningSwitch (object):
         origen = str(packet.src)
         destino = str(packet.dst)
 
-        ####################################################
-        ##################### Switch 1 #####################
-        ####################################################
+        tcp = packet.find("tcp")
+
+        if tcp is not None:
+          if 'HTTP' in tcp.payload:
+
+            ####################################################
+            ##################### Switch 1 #####################
+            ####################################################
 
 
-        ### Host 1
-        if puerto_entrada == 1:
-          print("Estoy en Switch 1, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:02":
-            drop(1)
-            return
-          else:
-            port = 5
+            ### Host 1
+            if puerto_entrada == 1:
+              print("Estoy en Switch 1, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:02":
+                drop(1)
+                return
+              else:
+                port = 5
 
-        ### Host 2
-        elif puerto_entrada == 2:
-          print("Estoy en Switch 1, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:01":
-            drop(1)
-            return
-          else:
-            port = 5
+            ### Host 2
+            elif puerto_entrada == 2:
+              print("Estoy en Switch 1, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:01":
+                drop(1)
+                return
+              else:
+                port = 5
 
-        ### Otros Hosts
-        # Si el destino de otros hosts es el un host, drop()
-        # de lo contrario, forward por puerto 5
+            ### Otros Hosts
+            # Si el destino de otros hosts es el un host, drop()
+            # de lo contrario, forward por puerto 5
+            
+
+            elif puerto_entrada == 3:
+              print("Estoy en Switch 1, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:01":
+                print("Nope! tenemos que botar el paquete...")
+                drop(1)
+                return
+              elif destino == "00:00:00:00:00:02":
+                print("Nope! tenemos que botar el paquete...")
+                drop(1)
+                return
+              else:
+                port = 5
+            
+            elif puerto_entrada == 4:
+              print("Estoy en Switch 1, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:01":
+                port = 1
+              elif destino == "00:00:00:00:00:02":
+                port = 2
+              else:
+                print("Nope! tenemos que botar el paquete...")
+                drop(1)   # en caso de que venga por el switch 3 y no vaya
+                return    # a ningun host, drop()
+            
+            ####################################################
+            ##################### Switch 2 #####################
+            ####################################################
+
+            ### Host 3
+            if puerto_entrada == 6:
+              print("Estoy en Switch 2, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:04":
+                drop(1)
+                return
+              else:
+                port = 9
+            
+            ### Host 4
+            elif puerto_entrada == 7:
+              print("Estoy en Switch 2, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:03":
+                drop(1)
+                return
+              else:
+                port = 9
+
+
+            ### Otros Switches
+            elif puerto_entrada == 8:
+              print("Estoy en Switch 2, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:03":
+                if origen == "00:00:00:00:00:01" or origen == "00:00:00:00:00:02":
+                  print("Nope! tenemos que botar el paquete...")
+                  drop(1)
+                  return
+                port = 6
+              elif destino == "00:00:00:00:00:04":
+                if origen == "00:00:00:00:00:01" or origen == "00:00:00:00:00:02":
+                  print("Nope! tenemos que botar el paquete...")
+                  drop(1)
+                  return
+                port = 7
+              else:
+                port = 9
+
+            ####################################################
+            ##################### Switch 3 #####################
+            ####################################################
+
+            if puerto_entrada == 12:
+              print("Estoy en Switch 3, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:01" or destino == "00:00:00:00:00:02":
+                port = 10
+              elif destino == "00:00:00:00:00:03" or destino == "00:00:00:00:00:04":
+                port = 11
+              else:
+                print("Nope! tenemos que botar el paquete...")
+                drop(1)
+                return
+              
+            ####################################################
+            ##################### Switch 4 #####################
+            ####################################################
+
+            if puerto_entrada == 14:
+              print("Estoy en Switch 4, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:03" or destino == "00:00:00:00:00:04":
+                port = 13
+              else:
+                print("Nope! tenemos que botar el paquete...")
+                drop(1)
+                return
+
+            ####################################################
+            ##################### Switch 5 #####################
+            ####################################################
+
+            ### consultas desde hosts a servidores
+            if puerto_entrada == 18:
+              print("Estoy en Switch 5, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:05":     
+                if origen == "00:00:00:00:00:01" or origen == "00:00:00:00:00:02":          # consultas desde Switch 1
+                  port = 15
+                else:
+                  print("Nope! tenemos que botar el paquete...")                                                                       # consultas desde Switch 2
+                  drop(1)
+                  return
+              elif destino == "00:00:00:00:00:06":
+                if origen == "00:00:00:00:00:03" or origen == "00:00:00:00:00:04":          # consultas desde Switch 2
+                  port = 16
+                else:
+                  print("Nope! tenemos que botar el paquete...")                                                                       # consultas desde Switch 1
+                  drop(1)
+                  return
+
+            ### respuestas de servidor "Host 5"
+            elif puerto_entrada == 15:
+              print("Estoy en Switch 5, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:01" or destino == "00:00:00:00:00:02":          # respuesta solo a switch 1
+                print("Respuesta a Switch 1!!")
+                port = 17
+              else:
+                print("Nope! tenemos que botar el paquete...")
+                drop(1)
+                return
+            
+            elif puerto_entrada == 16:
+              print("Estoy en Switch 5, y vengo de ", origen)
+              print("Voy a ", destino)
+              if destino == "00:00:00:00:00:03" or destino == "00:00:00:00:00:04":          # respuesta solo a switch 2
+                print("Respuesta a Switch 2!!")
+                port = 17
+              else:
+                print("Nope! tenemos que botar el paquete...")
+                drop(1)
+                return
         
 
-        elif puerto_entrada == 3:
-          print("Estoy en Switch 1, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:01":
-            print("Nope! tenemos que botar el paquete...")
-            drop(1)
-            return
-          elif destino == "00:00:00:00:00:02":
-            print("Nope! tenemos que botar el paquete...")
-            drop(1)
-            return
-          else:
-            port = 5
-        
-        elif puerto_entrada == 4:
-          print("Estoy en Switch 1, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:01":
-            port = 1
-          elif destino == "00:00:00:00:00:02":
-            port = 2
-          else:
-            print("Nope! tenemos que botar el paquete...")
-            drop(1)   # en caso de que venga por el switch 3 y no vaya
-            return    # a ningun host, drop()
-        
-        ####################################################
-        ##################### Switch 2 #####################
-        ####################################################
 
-        ### Host 3
-        if puerto_entrada == 6:
-          print("Estoy en Switch 2, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:04":
-            drop(1)
-            return
-          else:
-            port = 9
-        
-        ### Host 4
-        elif puerto_entrada == 7:
-          print("Estoy en Switch 2, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:03":
-            drop(1)
-            return
-          else:
-            port = 9
-
-
-        ### Otros Switches
-        elif puerto_entrada == 8:
-          print("Estoy en Switch 2, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:03":
-            if origen == "00:00:00:00:00:01" or origen == "00:00:00:00:00:02":
-              print("Nope! tenemos que botar el paquete...")
-              drop(1)
-              return
-            port = 6
-          elif destino == "00:00:00:00:00:04":
-            if origen == "00:00:00:00:00:01" or origen == "00:00:00:00:00:02":
-              print("Nope! tenemos que botar el paquete...")
-              drop(1)
-              return
-            port = 7
-          else:
-            port = 9
-
-        ####################################################
-        ##################### Switch 3 #####################
-        ####################################################
-
-        if puerto_entrada == 12:
-          print("Estoy en Switch 3, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:01" or destino == "00:00:00:00:00:02":
-            port = 10
-          elif destino == "00:00:00:00:00:03" or destino == "00:00:00:00:00:04":
-            port = 11
-          else:
-            print("Nope! tenemos que botar el paquete...")
-            drop(1)
-            return
-          
-        ####################################################
-        ##################### Switch 4 #####################
-        ####################################################
-
-        if puerto_entrada == 14:
-          print("Estoy en Switch 4, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:03" or destino == "00:00:00:00:00:04":
-            port = 13
-          else:
-            print("Nope! tenemos que botar el paquete...")
-            drop(1)
-            return
-
-        ####################################################
-        ##################### Switch 5 #####################
-        ####################################################
-
-        ### consultas desde hosts a servidores
-        if puerto_entrada == 18:
-          print("Estoy en Switch 5, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:05":     
-            if origen == "00:00:00:00:00:01" or origen == "00:00:00:00:00:02":          # consultas desde Switch 1
-              port = 15
-            else:
-              print("Nope! tenemos que botar el paquete...")                                                                       # consultas desde Switch 2
-              drop(1)
-              return
-          elif destino == "00:00:00:00:00:06":
-            if origen == "00:00:00:00:00:03" or origen == "00:00:00:00:00:04":          # consultas desde Switch 2
-              port = 16
-            else:
-              print("Nope! tenemos que botar el paquete...")                                                                       # consultas desde Switch 1
-              drop(1)
-              return
-
-        ### respuestas de servidor "Host 5"
-        elif puerto_entrada == 15:
-          print("Estoy en Switch 5, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:01" or destino == "00:00:00:00:00:02":          # respuesta solo a switch 1
-            print("Respuesta a Switch 1!!")
-            port = 17
-          else:
-            print("Nope! tenemos que botar el paquete...")
-            drop(1)
-            return
-        
-        elif puerto_entrada == 16:
-          print("Estoy en Switch 5, y vengo de ", origen)
-          print("Voy a ", destino)
-          if destino == "00:00:00:00:00:03" or destino == "00:00:00:00:00:04":          # respuesta solo a switch 2
-            print("Respuesta a Switch 2!!")
-            port = 17
-          else:
-            print("Nope! tenemos que botar el paquete...")
-            drop(1)
-            return
-        
 
         msg = of.ofp_flow_mod()
         msg.match = of.ofp_match.from_packet(packet, event.port)

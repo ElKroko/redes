@@ -56,8 +56,8 @@ class Topo_2( Topo ):
             # Todos repetidos
 
         # Links para switch_5
-        self.addLink(switch_5, host_5, 15, 23)
-        self.addLink(switch_5, host_6, 16, 24)
+        self.addLink(switch_5, host_5, 15, 80)
+        self.addLink(switch_5, host_6, 16, 80)
 
 
 
