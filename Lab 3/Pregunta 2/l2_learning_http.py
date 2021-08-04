@@ -198,7 +198,8 @@ class LearningSwitch (object):
           print("Estoy en Switch 1, y vengo de ", origen)
           print("Voy a ", destino)
           if destino == "00:00:00:00:00:02":
-            port = 2
+            drop(1)
+            return
           else:
             port = 5
 
@@ -207,7 +208,8 @@ class LearningSwitch (object):
           print("Estoy en Switch 1, y vengo de ", origen)
           print("Voy a ", destino)
           if destino == "00:00:00:00:00:01":
-            port = 1
+            drop(1)
+            return
           else:
             port = 5
 
@@ -274,13 +276,13 @@ class LearningSwitch (object):
           if destino == "00:00:00:00:00:03":
             if origen == "00:00:00:00:00:01" or origen == "00:00:00:00:00:02":
               print("Nope! tenemos que botar el paquete...")
-              drop()
+              drop(1)
               return
             port = 6
           elif destino == "00:00:00:00:00:04":
             if origen == "00:00:00:00:00:01" or origen == "00:00:00:00:00:02":
               print("Nope! tenemos que botar el paquete...")
-              drop()
+              drop(1)
               return
             port = 7
           else:
@@ -362,10 +364,6 @@ class LearningSwitch (object):
             drop(1)
             return
         
-        else:
-          print("Nope! tenemos que botar el paquete...")
-          drop(1)
-          return
 
         msg = of.ofp_flow_mod()
         msg.match = of.ofp_match.from_packet(packet, event.port)
