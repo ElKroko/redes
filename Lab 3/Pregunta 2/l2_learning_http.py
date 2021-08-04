@@ -352,15 +352,18 @@ class LearningSwitch (object):
         ### respuestas de servidor "Host 5"
         elif puerto_entrada == 15:
           print("Estoy en Switch 5, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:01" or destino == "00:00:00:00:00:02":          # respuesta solo a switch 1
             print("Respuesta a Switch 1!!")
             port = 17
           else:
+            print("Nope! tenemos que botar el paquete...")
             drop(1)
             return
         
         elif puerto_entrada == 16:
           print("Estoy en Switch 5, y vengo de ", origen)
+          print("Voy a ", destino)
           if destino == "00:00:00:00:00:03" or destino == "00:00:00:00:00:04":          # respuesta solo a switch 2
             print("Respuesta a Switch 2!!")
             port = 17
